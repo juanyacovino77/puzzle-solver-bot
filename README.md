@@ -1,1 +1,2 @@
-# tp_ia_2021
+# Trabajo Práctico de Inteligencia Artificial 2021
+Grupo 99: Bertone, Aiassa, Yacovino
