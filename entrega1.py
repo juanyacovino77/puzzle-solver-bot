@@ -1,8 +1,30 @@
 from simpleai.search import SearchProblem, astar
 
-#Initial_State:
-#[[robots],[casilleros_recorridos]]
-#id_robot,pos_robot,state_bateria = robots 
+def planear_escaneo(tuneles, robots):
+    '''Tunel y robots que recibimos como parametros'''
+
+    INITIAL_STATE = formular_estado(tuneles, robots)
+
+    pass
+
+def formular_estado(tuneles, robots):
+    '''A partir de los parametros recibidos creamos el estado inicial'''
+    robots_modificable = list(robot for robot in robots)
+
+    for robot in robots_modificable:
+        robot.append([5,0])
+        robot.append(1000)
+
+    state_modificable = [robots_modificable, () ]
+
+    return tuple(state_modificable)
+    
+
+'''
+INITIAL_STATE= (​("s1", "soporte", (5,0)), (escaneado))
+'''
+
+
 class MinaProblema(SearchProblem):
     def actions(self,state):
         robots,casillerros_recorridos = state
