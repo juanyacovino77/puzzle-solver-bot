@@ -5,8 +5,6 @@ tunel = [] # Aca guardamos los tuneles globalmente
 def planear_escaneo(tuneles, robots):
     '''Tunel y robots que recibimos como parametros'''
 
-    tunel = tuneles
-
     INITIAL_STATE = formular_estado(tuneles, robots)
 
     problema = MinaProblema(INITIAL_STATE)
@@ -16,7 +14,11 @@ def planear_escaneo(tuneles, robots):
     pass
 
 def formular_estado(tuneles, robots):
+
     '''A partir de los parametros recibidos creamos el estado inicial'''
+    global tunel
+    tunel = tuneles
+
     robots_modificable = list(robot for robot in robots)
 
     for robot in robots_modificable:
@@ -27,9 +29,17 @@ def formular_estado(tuneles, robots):
 
     return tuple(state_modificable)
     
+def convertir_a_lista(tupla):
+    pass
+
+def convertir_a_tupla(lista):
+    pass
+
 
 '''
-INITIAL_STATE= (​("s1", "soporte", (5,0), 1000),("s2", "soporte", (5,0),1000)), () )
+INITIAL_STATE= ( ​("s1", "soporte", (5,0), 1000),("s2", "soporte", (5,0),1000)),  ()  )
+                \____________________________________________________________/  \__/
+                                        robots                                casilleros recorridos                                  
 '''
 
 
@@ -58,13 +68,15 @@ class MinaProblema(SearchProblem):
         pass
 
     def cost(self, state1, action, state2):
+        accion = action[1]
 
-        #si es mover -> 1min
-        #si recargar -> 5min
-        pass
+        if accion == "mover":
+            return 1
+        elif accion == "cargar":
+            return 5
 
     def heuristic(self, state):
-        # cantidad de tuneles que falta recorrer
-        pass
+        # cantidad de casilleros que faltan recorrer
+        return len(tunel) - len(state[1])
 
 
