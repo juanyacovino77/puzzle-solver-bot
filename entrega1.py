@@ -46,17 +46,31 @@ INITIAL_STATE= ( ​("s1", "soporte", (5,0), 1000),("s2", "soporte", (5,0),1000)
 class MinaProblema(SearchProblem):
     def actions(self,state):
         robots,casillerros_recorridos = state
-        #for robot in robots
-        #for robots: 
-        #si es rSoporte o si es (rMapeo y bateria>0) ->  moverse entre tuneles 
-        #
-        #si es robot[i] == soporte y mismo lugar robot mapeo (con bateria <1000) -> recargar robot mapeo
-        #if ROBOTS[robot[0]][1] == soporte
-        #    for robot2 in robots
-        #        if ROBOTS[robot[0]][1] == escaneador    
-        #            if robot[1] == robot2[1]
-                        #agregar action recargar
-        pass
+        actions = []
+        
+        for robot in robots:
+            if robot[3] > 0:
+                #moverse dentro de tablero y si existe en tuneles
+                fila_robot, colu_robot = robot[2]
+                if fila_robot > 0:
+                    if (fila_robot-1,colu_robot) in tuneles:
+                    actions.append((robot[0],"mover",(fila_robot-1,colu_robot)))
+                if fila_robot < 10:
+                    if (fila_robot+1,colu_robot) in tuneles:
+                    actions.append((robot[0],"mover",(fila_robot+1,colu_robot)))
+                if colu_robot > 0:
+                    if (fila_robot,colu_robot-1) in tuneles:
+                    actions.append((robot[0],"mover",(fila_robot,colu_robot-1)))
+                if colu_robot < 10:
+                    if (fila_robot,colu_robot+1) in tuneles:
+                    actions.append((robot[0],"mover",(fila_robot,colu_robot+1)))
+
+            #si es rSoporte recargar si hay rMapeadores en mismo ubicacion
+            if robot[1] == "soporte":
+                for robotMapeo in robots:
+                    if robotMapeo[1] == "escaneador" and robot[2] == robotMapeo[2] and robotMapeo[3]<1000:
+                        actions.append(robot[0],"cargar",robotMapeo[0])
+        return actions
 
     def result(self, state, action):
         state = list(state)
