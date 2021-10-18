@@ -1,10 +1,18 @@
 from simpleai.search import SearchProblem, astar
 
+tunel = [] # Aca guardamos los tuneles globalmente
+
 def planear_escaneo(tuneles, robots):
     '''Tunel y robots que recibimos como parametros'''
 
+    tunel = tuneles
+
     INITIAL_STATE = formular_estado(tuneles, robots)
 
+    problema = MinaProblema(INITIAL_STATE)
+    resultado = astar(problema, graph_search=False)
+
+    # A partir de resultado contruir la estructura de dato de salida
     pass
 
 def formular_estado(tuneles, robots):
@@ -12,8 +20,8 @@ def formular_estado(tuneles, robots):
     robots_modificable = list(robot for robot in robots)
 
     for robot in robots_modificable:
-        robot.append([5,0])
-        robot.append(1000)
+        robot.append([5,0]) #Agregamos la posicion inicial de cada robot
+        robot.append(1000)  #Agregamos la bateria inicial de cada robot
 
     state_modificable = [robots_modificable, () ]
 
@@ -21,7 +29,7 @@ def formular_estado(tuneles, robots):
     
 
 '''
-INITIAL_STATE= (​("s1", "soporte", (5,0)), (escaneado))
+INITIAL_STATE= (​("s1", "soporte", (5,0), 1000),("s2", "soporte", (5,0),1000)), () )
 '''
 
 
@@ -50,6 +58,7 @@ class MinaProblema(SearchProblem):
         pass
 
     def cost(self, state1, action, state2):
+
         #si es mover -> 1min
         #si recargar -> 5min
         pass
