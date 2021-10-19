@@ -14,20 +14,22 @@ def planear_escaneo(tuneles, robots):
     pass
 
 def formular_estado(tuneles, robots):
-
     '''A partir de los parametros recibidos creamos el estado inicial'''
     global tunel
     tunel = tuneles
+    state = ()
 
-    robots_modificable = list(robot for robot in robots)
+    robots_modificable = list(list(robot) for robot in robots)
 
     for robot in robots_modificable:
-        robot.append([5,0]) #Agregamos la posicion inicial de cada robot
+        robot.append((5,0)) #Agregamos la posicion inicial de cada robot
         robot.append(1000)  #Agregamos la bateria inicial de cada robot
+    
+    robots = tuple(tuple(r) for r in robots_modificable)
 
-    state_modificable = [robots_modificable, () ]
+    state = (robots, () )
 
-    return tuple(state_modificable)
+    return state
     
 def convertir_a_lista(tupla):
     pass
@@ -53,17 +55,17 @@ class MinaProblema(SearchProblem):
                 #moverse dentro de tablero y si existe en tuneles
                 fila_robot, colu_robot = robot[2]
                 if fila_robot > 0:
-                    if (fila_robot-1,colu_robot) in tuneles:
-                    actions.append((robot[0],"mover",(fila_robot-1,colu_robot)))
+                    if (fila_robot-1,colu_robot) in tunel:
+                        actions.append((robot[0],"mover",(fila_robot-1,colu_robot)))
                 if fila_robot < 10:
-                    if (fila_robot+1,colu_robot) in tuneles:
-                    actions.append((robot[0],"mover",(fila_robot+1,colu_robot)))
+                    if (fila_robot+1,colu_robot) in tunel:
+                        actions.append((robot[0],"mover",(fila_robot+1,colu_robot)))
                 if colu_robot > 0:
-                    if (fila_robot,colu_robot-1) in tuneles:
-                    actions.append((robot[0],"mover",(fila_robot,colu_robot-1)))
+                    if (fila_robot,colu_robot-1) in tunel:
+                        actions.append((robot[0],"mover",(fila_robot,colu_robot-1)))
                 if colu_robot < 10:
-                    if (fila_robot,colu_robot+1) in tuneles:
-                    actions.append((robot[0],"mover",(fila_robot,colu_robot+1)))
+                    if (fila_robot,colu_robot+1) in tunel:
+                        actions.append((robot[0],"mover",(fila_robot,colu_robot+1)))
 
             #si es rSoporte recargar si hay rMapeadores en mismo ubicacion
             if robot[1] == "soporte":
@@ -95,9 +97,9 @@ class MinaProblema(SearchProblem):
     def is_goal(self, state):        
         #if (casilleros_recorridos == tuneles)
         if len(state[1]) == len(tunel):
-            return true
+            return True
         else:
-            return false
+            return False
 
     def cost(self, state1, action, state2):
         accion = action[1]
@@ -109,6 +111,7 @@ class MinaProblema(SearchProblem):
 
     def heuristic(self, state):
         # cantidad de casilleros que faltan recorrer
-        return len(tunel) - len(state[1])
+        tunel_recorrido = state[1]
+        return len(tunel) - len(tunel_recorrido)
 
 
