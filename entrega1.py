@@ -78,22 +78,27 @@ class MinaProblema(SearchProblem):
 
     def result(self, state, action):
         state = list(state)
-        robot1, action_name, robot2_or_destiny = action
+        
+        robots, recorrido = state
+        robot_origen, action_name, robot_destino = action
+        
         if action_name == "mover":
             # si action = mover y rMapeo -> descontar bateria 100 y agregar en casilleros recorridos, si es rSoporte solo cambiar posicion
-            for robot in state[0]:
-                if robot[0] == robot1:
-                    robot[2] = robot2_or_destiny
+            for robot in robots:
+                if robot[0] == robot_origen:
+                    robot[2] = robot_destino
                     if robot[1] == "escaneador":
                         robot[3] = robot[3] - 100
-                        state[1].append(robot[2])
-                        break
+                        if robot[2] in recorrido:
+                            recorrido.append(tuple(robot[2]))
+                            break
         else:
             # si action = recargar -> recargar bateria de robot especificado a 1000
-            for robot2 in state[0]:
-                if robot2[0] == robot2_or_destiny:
-                    robot2[2] = 1000
+            for robot in robots:
+                if robot[0] == robot_destino:
+                    robot[2] = 1000
                     break
+                    
         return tuple(state)
 
     def is_goal(self, state):        
