@@ -5,29 +5,27 @@ tunel = [] # Aca guardamos los tuneles globalmente
 def planear_escaneo(tuneles, robots):
     '''Tunel y robots que recibimos como parametros'''
 
-    INITIAL_STATE = formular_estado(tuneles, robots)
+    INITIAL_STATE = formular_estado(robots)
 
-    problema = MinaProblema(INITIAL_STATE)
+    problema = MinaProblema(INITIAL_STATE, tuneles)
     resultado = astar(problema, graph_search=False)
 
     # A partir de resultado contruir la estructura de dato de salida
     pass
 
-def formular_estado(tuneles, robots):
+def formular_estado(robots):
     '''A partir de los parametros recibidos creamos el estado inicial'''
-    global tunel
-    tunel = tuneles
-    state = ()
-
+    
     robots_modificable = list(list(robot) for robot in robots)
 
     for robot in robots_modificable:
         robot.append((5,0)) #Agregamos la posicion inicial de cada robot
         robot.append(1000)  #Agregamos la bateria inicial de cada robot
     
-    robots = tuple(tuple(r) for r in robots_modificable)
-
-    state = (robots, () )
+    robots = tuple(tuple(robot) for robot in robots_modificable)
+    
+    recorrido = ()
+    state = (robots, recorrido)
 
     return state
     
@@ -46,6 +44,10 @@ INITIAL_STATE= ( ​("s1", "soporte", (5,0), 1000),("s2", "soporte", (5,0),1000)
 
 
 class MinaProblema(SearchProblem):
+    def __init__(self, tuneles):
+        super().__init__()
+        self.tunel = tuneles
+        
     def actions(self,state):
         robots,casillerros_recorridos = state
         actions = []
