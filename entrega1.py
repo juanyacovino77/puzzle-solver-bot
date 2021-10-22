@@ -89,7 +89,7 @@ class MinaProblema(SearchProblem):
                     robot[2] = robot_destino
                     if robot[1] == "escaneador":
                         robot[3] = robot[3] - 100
-                        if robot[2] in recorrido:
+                        if robot[2] not in recorrido:
                             recorrido.append(tuple(robot[2]))
                             break
         else:
