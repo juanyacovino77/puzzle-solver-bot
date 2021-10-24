@@ -1,4 +1,5 @@
 from simpleai.search import SearchProblem, astar
+from simpleai.search.viewers import WebViewer, BaseViewer
 
 tunel = [] # Aca guardamos los tuneles globalmente
 
@@ -17,8 +18,10 @@ def planear_escaneo(tuneles, robots):
 
     salida = []
 
-    for action, state in resultado.path():
-        salida.append(tuple(action))
+    camino = resultado.path()
+    for action, state in camino:
+        if action is not None:
+            salida.append(tuple(action))
 
     return salida
 
@@ -74,20 +77,20 @@ class MinaProblema(SearchProblem):
             if robot[3] > 0:
                 #moverse dentro de tablero y si existe en tuneles
                 fila_robot, colu_robot = robot[2]
-                if fila_robot > 0:
-                    if (fila_robot-1,colu_robot) in tunel:
-                        actions.append((robot[0],"mover",(fila_robot-1,colu_robot)))
-                if fila_robot < 10:
-                    if (fila_robot+1,colu_robot) in tunel:
-                        actions.append((robot[0],"mover",(fila_robot+1,colu_robot)))
-                if colu_robot > 0:
-                    if (fila_robot,colu_robot-1) in tunel:
-                        actions.append((robot[0],"mover",(fila_robot,colu_robot-1)))
-                if colu_robot < 10:
-                    if (fila_robot,colu_robot+1) in tunel:
-                        actions.append((robot[0],"mover",(fila_robot,colu_robot+1)))
 
-            #si es rSoporte recargar si hay rMapeadores en mismo ubicacion
+                if (fila_robot-1,colu_robot) in tunel:
+                    actions.append((robot[0],"mover",(fila_robot-1,colu_robot)))
+
+                if (fila_robot+1,colu_robot) in tunel:
+                    actions.append((robot[0],"mover",(fila_robot+1,colu_robot)))
+
+                if (fila_robot,colu_robot-1) in tunel:
+                    actions.append((robot[0],"mover",(fila_robot,colu_robot-1)))
+    
+                if (fila_robot,colu_robot+1) in tunel:
+                    actions.append((robot[0],"mover",(fila_robot,colu_robot+1)))
+
+            #si es robot Soporte recargar si hay robot Mapeadores en mismo ubicacion
             if robot[1] == "soporte":
                 for robotMapeo in robots:
                     if robotMapeo[1] == "escaneador" and robot[2] == robotMapeo[2] and robotMapeo[3]<1000:
@@ -114,11 +117,11 @@ class MinaProblema(SearchProblem):
                             recorrido_m.append(tuple(robot[2]))
                             recorrido = tuple(recorrido_m)
                         break
-        else:
-            # si action = recargar -> recargar bateria de robot especificado a 1000
+                    break
+        else: # si action = recargar -> recargar bateria de robot especificado a 1000 
             for robot in robots_m:
                 if robot[0] == robot_destino:
-                    robot[2] = 1000
+                    robot[3] = 1000
                     break
 
         robotss = tuple(tuple(robot) for robot in robots_m)
@@ -133,9 +136,13 @@ class MinaProblema(SearchProblem):
         return len(tunel) - len(tunel_recorrido)
 
 
+'''
+tuneles= [(5, 1),(6, 1),(6, 2)]
+robots = [("s1", "soporte"), ("e1", "escaneador"), ("e2", "escaneador"), ("e3", "escaneador")]
 
-#tuneles= [(5, 1),(6, 1),(6, 2)]
-#robots = [("s1", "soporte"), ("e1", "escaneador"), ("e2", "escaneador"), ("e3", "escaneador")]
+salida = planear_escaneo(tuneles, robots)
 
-#salida = planear_escaneo(tuneles, robots)
+print(salida)
+'''
+
 
