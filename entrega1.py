@@ -3,18 +3,30 @@ from simpleai.search import SearchProblem, astar
 tunel = [] # Aca guardamos los tuneles globalmente
 
 def planear_escaneo(tuneles, robots):
-    '''Tunel y robots que recibimos como parametros'''
+    '''
+    A partir de los tuneles y robots recibidos
+    como parametros, formulamos un estado,corremos
+    el problema con ese estado y devolvemos la estructura
+    de salida requerida
+    '''
 
-    INITIAL_STATE = formular_estado(robots)
+    INITIAL_STATE = formular_estado(robots, tuneles)
 
-    problema = MinaProblema(INITIAL_STATE, tuneles)
+    problema = MinaProblema(INITIAL_STATE)
     resultado = astar(problema, graph_search=False)
 
-    # A partir de resultado contruir la estructura de dato de salida
-    pass
+    salida = []
 
-def formular_estado(robots):
+    for action, state in resultado.path():
+        salida.append(tuple(action))
+
+    return salida
+
+
+def formular_estado(robots,tuneles):
     '''A partir de los parametros recibidos creamos el estado inicial'''
+    global tunel
+    tunel = tuneles
     
     robots_modificable = list(list(robot) for robot in robots)
 
@@ -29,25 +41,31 @@ def formular_estado(robots):
 
     return state
     
-def convertir_a_lista(tupla):
-    pass
-
-def convertir_a_tupla(lista):
-    pass
 
 
 '''
 INITIAL_STATE= ( ​("s1", "soporte", (5,0), 1000),("s2", "soporte", (5,0),1000)),  ()  )
                 \____________________________________________________________/  \__/
-                                        robots                                casilleros recorridos                                  
+                                        robots                                recorridos                                  
 '''
 
 
 class MinaProblema(SearchProblem):
-    def __init__(self, tuneles):
-        super().__init__()
-        self.tunel = tuneles
-        
+    def cost(self, state1, action, state2):
+        accion = action[1]
+
+        if accion == "mover":
+            return 1
+        elif accion == "cargar":
+            return 5
+
+    def is_goal(self, state):        
+        #if (casilleros_recorridos == tuneles)
+        if len(state[1]) == len(tunel):
+            return True
+        else:
+            return False
+
     def actions(self,state):
         robots,casillerros_recorridos = state
         actions = []
@@ -73,10 +91,11 @@ class MinaProblema(SearchProblem):
             if robot[1] == "soporte":
                 for robotMapeo in robots:
                     if robotMapeo[1] == "escaneador" and robot[2] == robotMapeo[2] and robotMapeo[3]<1000:
-                        actions.append(robot[0],"cargar",robotMapeo[0])
+                        actions.append((robot[0],"cargar",robotMapeo[0]))
         return actions
 
     def result(self, state, action):
+        
         
         robots, recorrido = state
         robot_origen, action_name, robot_destino = action
@@ -91,7 +110,9 @@ class MinaProblema(SearchProblem):
                     if robot[1] == "escaneador":
                         robot[3] = robot[3] - 100
                         if robot[2] not in recorrido:
-                            recorrido.append(tuple(robot[2]))
+                            recorrido_m = list(recorrido)
+                            recorrido_m.append(tuple(robot[2]))
+                            recorrido = tuple(recorrido_m)
                         break
         else:
             # si action = recargar -> recargar bateria de robot especificado a 1000
@@ -99,27 +120,22 @@ class MinaProblema(SearchProblem):
                 if robot[0] == robot_destino:
                     robot[2] = 1000
                     break
+
+        robotss = tuple(tuple(robot) for robot in robots_m)
+        nuevo_state = (robotss, recorrido)
+        
                     
-        return tuple(state)
-
-    def is_goal(self, state):        
-        #if (casilleros_recorridos == tuneles)
-        if len(state[1]) == len(tunel):
-            return True
-        else:
-            return False
-
-    def cost(self, state1, action, state2):
-        accion = action[1]
-
-        if accion == "mover":
-            return 1
-        elif accion == "cargar":
-            return 5
+        return nuevo_state
 
     def heuristic(self, state):
         # cantidad de casilleros que faltan recorrer
         tunel_recorrido = state[1]
         return len(tunel) - len(tunel_recorrido)
 
+
+
+#tuneles= [(5, 1),(6, 1),(6, 2)]
+#robots = [("s1", "soporte"), ("e1", "escaneador"), ("e2", "escaneador"), ("e3", "escaneador")]
+
+#salida = planear_escaneo(tuneles, robots)
 
