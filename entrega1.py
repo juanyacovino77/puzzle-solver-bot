@@ -155,7 +155,7 @@ class MinaProblema(SearchProblem):
         recorrido_m = list(state[1])
         faltan_recorrer = list(set(tunel)-set(recorrido_m))
 
-        sumatoria=0
+        sumatoria=[]
 
         for x_c, y_c in faltan_recorrer:
             min = 999
@@ -165,9 +165,9 @@ class MinaProblema(SearchProblem):
                 if diferencia<min:
                     min=diferencia
                 
-            sumatoria = sumatoria+min
+            sumatoria.append(min)
 
-        return sumatoria
+        return max(sumatoria)
         '''
 
         #cantidad de casilleros que faltan recorrer
