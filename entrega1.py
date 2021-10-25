@@ -14,7 +14,7 @@ def planear_escaneo(tuneles, robots):
     INITIAL_STATE = formular_estado(robots, tuneles)
 
     problema = MinaProblema(INITIAL_STATE)
-    resultado = astar(problema, graph_search=False)
+    resultado = astar(problema, graph_search=True)
 
     salida = []
 
@@ -74,7 +74,7 @@ class MinaProblema(SearchProblem):
         actions = []
         
         for robot in robots:
-            if robot[3] > 0:
+            if robot[3] >= 100:
                 #moverse dentro de tablero y si existe en tuneles
                 fila_robot, colu_robot = robot[2]
 
@@ -104,6 +104,7 @@ class MinaProblema(SearchProblem):
         robot_origen, action_name, robot_destino = action
         
         robots_m = list(list(robot) for robot in robots)
+        recorrido_m = list(recorrido)
         
         if action_name == "mover":
             # si action = mover y rMapeo -> descontar bateria 100 y agregar en casilleros recorridos, si es rSoporte solo cambiar posicion
@@ -113,9 +114,7 @@ class MinaProblema(SearchProblem):
                     if robot[1] == "escaneador":
                         robot[3] = robot[3] - 100
                         if robot[2] not in recorrido:
-                            recorrido_m = list(recorrido)
                             recorrido_m.append(tuple(robot[2]))
-                            recorrido = tuple(recorrido_m)
                         break
                     break
         else: # si action = recargar -> recargar bateria de robot especificado a 1000 
@@ -124,14 +123,40 @@ class MinaProblema(SearchProblem):
                     robot[3] = 1000
                     break
 
-        robotss = tuple(tuple(robot) for robot in robots_m)
-        nuevo_state = (robotss, recorrido)
+        robots = tuple(tuple(robot) for robot in robots_m)
+        recorrido = tuple(recorrido_m)
+
+        nuevo_state = (robots, recorrido)
         
                     
         return nuevo_state
 
     def heuristic(self, state):
-        # cantidad de casilleros que faltan recorrer
+        '''
+        Sumatoria de distancia minima a la que se encuentra
+        el robot mas cercano a cada posicion
+        que falta recorrer
+        
+        robots = state[0]
+        recorrido_m = list(state[1])
+        faltan_recorrer = list(set(tunel)-set(recorrido_m))
+
+        sumatoria=0
+
+        for x_c, y_c in faltan_recorrer:
+            min = 999
+            for robot in robots:
+                x_r, y_r = robot[2]
+                diferencia = (abs((x_c-x_r)+(y_c-y_r)))
+                if diferencia<min:
+                    min=diferencia
+                
+            sumatoria = sumatoria+min
+
+        return sumatoria
+        '''
+
+        #cantidad de casilleros que faltan recorrer
         tunel_recorrido = state[1]
         return len(tunel) - len(tunel_recorrido)
 
