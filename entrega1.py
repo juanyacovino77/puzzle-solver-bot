@@ -18,8 +18,7 @@ def planear_escaneo(tuneles, robots):
 
     salida = []
 
-    camino = resultado.path()
-    for action, state in camino:
+    for action, state in resultado.path():
         if action is not None:
             salida.append(tuple(action))
 
