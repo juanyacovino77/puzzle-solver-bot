@@ -106,6 +106,19 @@ class MinaProblema(SearchProblem):
         robots_m = list(list(robot) for robot in robots)
         recorrido_m = list(recorrido)
         
+        '''
+        if action_name == "mover":
+            robot = [robot for robot in robots_m if robot[0] == robot_origen
+            robot[2] = robot_destino
+            if robot[1] == "escaneador":
+                robot[3] = robot[3] - 100
+                if robot[2] not in recorrido:
+                     recorrido_m.append(tuple(robot[2]))
+        else:
+            robot = [robot for robot in robots_m if robot[0] == robot_destino]
+            robot[3] = 100
+        '''
+        
         if action_name == "mover":
             # si action = mover y rMapeo -> descontar bateria 100 y agregar en casilleros recorridos, si es rSoporte solo cambiar posicion
             for robot in robots_m:
