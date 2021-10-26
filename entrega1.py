@@ -169,6 +169,9 @@ class MinaProblema(SearchProblem):
             robots_minimos[robot_min].append(min)
             
         suma = 0
+        
+        sum(max(lista) for lista in robots_minimo.values())
+        
         for lista in robots_minimos.values():
             suma = suma + max(lista)
         
