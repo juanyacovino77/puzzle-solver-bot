@@ -163,11 +163,12 @@ class MinaProblema(SearchProblem):
             min = 999
             robot_min = ""
             for robot in robots_m:
-                x_r, y_r = robot[2]
-                diferencia = (abs((x_c-x_r)+(y_c-y_r)))
-                if diferencia<min:
-                    min=diferencia
-                    robot_min=robot
+                if robot[1] is not "soporte":
+                    x_r, y_r = robot[2]
+                    diferencia = (abs((x_c-x_r)+(y_c-y_r)))
+                    if diferencia<min:
+                        min=diferencia
+                        robot_min=robot
 
             robot_min[4].append(min)
 
