@@ -144,12 +144,11 @@ class MinaProblema(SearchProblem):
         return nuevo_state
 
     def heuristic(self, state):
-        '''
-        Primero calculamos para cada robot las posiciones pendientes
-        cercanas
-        Para ese robot calculamos la distancia entre el robot y
-        la posicion pendiente mas lejana
-        Y hacemos la sumatoria de eso para cada robot
+        '''   
+        Distancia minima a la que se encuentra el robot
+        mas cercano a cada posicion pendiente de recorrer.
+        Si un robot tiene mas de una posicion pendiente
+        cerca, tomamos la mas lejana.
         
         robots = state[0]
         recorrido_m = list(state[1])
