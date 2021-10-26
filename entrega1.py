@@ -1,5 +1,4 @@
 from simpleai.search import SearchProblem, astar
-from simpleai.search.viewers import WebViewer, BaseViewer
 
 tunel = [] # Aca guardamos los tuneles globalmente
 
@@ -24,7 +23,6 @@ def planear_escaneo(tuneles, robots):
 
     return salida
 
-
 def formular_estado(robots,tuneles):
     '''A partir de los parametros recibidos creamos el estado inicial'''
     global tunel
@@ -38,21 +36,19 @@ def formular_estado(robots,tuneles):
     
     robots = tuple(tuple(robot) for robot in robots_modificable)
     
-    recorrido = ()
-    state = (robots, recorrido)
+    pendientes = tuneles
+    state = (robots, pendientes)
 
     return state
     
 
-
 '''
 INITIAL_STATE= ( ​("s1", "soporte", (5,0), 1000),("s2", "soporte", (5,0),1000)),  ()  )
-                \____________________________________________________________/  \__/
                                         robots                                recorridos                                  
 '''
 
-
 class MinaProblema(SearchProblem):
+
     def cost(self, state1, action, state2):
         accion = action[1]
 
@@ -61,15 +57,16 @@ class MinaProblema(SearchProblem):
         elif accion == "cargar":
             return 5
 
-    def is_goal(self, state):        
-        #if (casilleros_recorridos == tuneles)
-        if len(state[1]) == len(tunel):
+    def is_goal(self, state):
+        _ , pendientes = state
+        
+        if len(pendientes) == 0:
             return True
         else:
-            return False
+            return False     
 
     def actions(self,state):
-        robots,casillerros_recorridos = state
+        robots, _ = state
         actions = []
         
         for robot in robots:
@@ -99,25 +96,34 @@ class MinaProblema(SearchProblem):
     def result(self, state, action):
         
         
-        robots, recorrido = state
+        robots, pendientes = state
         robot_origen, action_name, robot_destino = action
         
         robots_m = list(list(robot) for robot in robots)
-        recorrido_m = list(recorrido)
+        pendientes_m = list(pendientes)
         
-        '''
         if action_name == "mover":
-            robot = [robot for robot in robots_m if robot[0] == robot_origen
+            robot = [robot for robot in robots_m if robot[0] == robot_origen][0]
             robot[2] = robot_destino
             if robot[1] == "escaneador":
                 robot[3] = robot[3] - 100
-                if robot[2] not in recorrido:
-                     recorrido_m.append(tuple(robot[2]))
+                if robot[2] in pendientes_m:
+                     pendientes_m.remove(robot[2])
         else:
-            robot = [robot for robot in robots_m if robot[0] == robot_destino]
-            robot[3] = 100
-        '''
+            robot = [robot for robot in robots_m if robot[0] == robot_destino][0]
+            robot[3] = 1000
         
+                
+        robots = tuple(tuple(robot) for robot in robots_m)
+        pendientes = tuple(pendientes_m)
+
+        nuevo_state = (robots, pendientes)
+        
+
+        '''
+        Este codigo tarda 2 minutos menos que el de arriba. al final la compresion de listas
+        gasta mas que un for comun!!!!
+
         if action_name == "mover":
             # si action = mover y rMapeo -> descontar bateria 100 y agregar en casilleros recorridos, si es rSoporte solo cambiar posicion
             for robot in robots_m:
@@ -125,8 +131,8 @@ class MinaProblema(SearchProblem):
                     robot[2] = robot_destino
                     if robot[1] == "escaneador":
                         robot[3] = robot[3] - 100
-                        if robot[2] not in recorrido:
-                            recorrido_m.append(tuple(robot[2]))
+                        if robot[2] in pendientes_m:
+                            pendientes_m.remove(robot[2])
                         break
                     break
         else: # si action = recargar -> recargar bateria de robot especificado a 1000 
@@ -135,11 +141,12 @@ class MinaProblema(SearchProblem):
                     robot[3] = 1000
                     break
 
-        robots = tuple(tuple(robot) for robot in robots_m)
-        recorrido = tuple(recorrido_m)
-
-        nuevo_state = (robots, recorrido)
         
+        robots = tuple(tuple(robot) for robot in robots_m)
+        pendientes = tuple(pendientes_m)
+
+        nuevo_state = (robots, pendientes)
+        '''
                     
         return nuevo_state
 
@@ -175,25 +182,13 @@ class MinaProblema(SearchProblem):
         suma = 0
         for robot in robots_m:
             id,nombre, pos, bat, mins = robot
-            print(mins)
             if len(mins)>0:
                 suma = suma + max(mins)
 
         return suma
         '''
 
-        #cantidad de casilleros que faltan recorrer
-        tunel_recorrido = state[1]
-        return len(tunel) - len(tunel_recorrido)
-
-
-'''
-tuneles= [(5, 1),(6, 1),(6, 2)]
-robots = [("s1", "soporte"), ("e1", "escaneador"), ("e2", "escaneador"), ("e3", "escaneador")]
-
-salida = planear_escaneo(tuneles, robots)
-
-print(salida)
-'''
+        _ , pendientes = state
+        return len(pendientes)
 
 
