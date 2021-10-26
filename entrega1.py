@@ -154,19 +154,27 @@ class MinaProblema(SearchProblem):
         recorrido_m = list(state[1])
         faltan_recorrer = list(set(tunel)-set(recorrido_m))
 
-        sumatoria=[]
-
+        robots_minimos = {[]}
+        
         for x_c, y_c in faltan_recorrer:
             min = 999
+            robot_min = ""
             for robot in robots:
                 x_r, y_r = robot[2]
                 diferencia = (abs((x_c-x_r)+(y_c-y_r)))
                 if diferencia<min:
                     min=diferencia
-                
-            sumatoria.append(min)
+                    robot_min = robot[0]
+                    
+            robots_minimos[robot_min].append(min)
+            
+        suma = 0
+        for lista in robots_minimos.values():
+            suma = suma + max(lista)
+        
+        
 
-        return max(sumatoria)
+        return suma
         '''
 
         #cantidad de casilleros que faltan recorrer
