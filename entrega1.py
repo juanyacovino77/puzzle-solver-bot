@@ -153,29 +153,30 @@ class MinaProblema(SearchProblem):
         robots = state[0]
         recorrido_m = list(state[1])
         faltan_recorrer = list(set(tunel)-set(recorrido_m))
-
-        robots_minimos = {[]}
         
+        robots_m = list(list(robot)for robot in robots)
+
+        for robot in robots_m:
+            robot.append([])
+            
         for x_c, y_c in faltan_recorrer:
             min = 999
             robot_min = ""
-            for robot in robots:
+            for robot in robots_m:
                 x_r, y_r = robot[2]
                 diferencia = (abs((x_c-x_r)+(y_c-y_r)))
                 if diferencia<min:
                     min=diferencia
-                    robot_min = robot[0]
-                    
-            robots_minimos[robot_min].append(min)
-            
+                    robot_min=robot
+
+            robot_min[4].append(min)
+
         suma = 0
-        
-        sum(max(lista) for lista in robots_minimo.values())
-        
-        for lista in robots_minimos.values():
-            suma = suma + max(lista)
-        
-        
+        for robot in robots_m:
+            id,nombre, pos, bat, mins = robot
+            print(mins)
+            if len(mins)>0:
+                suma = suma + max(mins)
 
         return suma
         '''
