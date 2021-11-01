@@ -188,7 +188,7 @@ class MinaProblema(SearchProblem):
         return suma
         '''
 
-        _ , pendientes = state
-        return len(pendientes)
+        robots , pendientes = state
+        return len(pendientes) + len(robots)
 
 
