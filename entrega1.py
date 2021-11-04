@@ -189,6 +189,6 @@ class MinaProblema(SearchProblem):
         '''
 
         robots , pendientes = state
-        return len(pendientes) + len(robots)
+        return len(pendientes)
 
 
